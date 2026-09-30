@@ -126,7 +126,7 @@ io.on('connection', (socket) => {
   });
 }); 
 
-app.get('/', (req, res) => { res.send('Hello EdTech API!') });
+app.get('/', (req, res) => { res.send('Hello Hussain API!') });
 
 app.post('/auth/sign-up', authCtrl.signUp);
 app.post('/auth/sign-in', authCtrl.signIn);
