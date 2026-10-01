@@ -141,6 +141,32 @@ const addLesson = async (req, res) => {
     }
 }
 
+const updateLesson = async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.courseId);
+        if (!checkOwnership(course, req.user)) return res.status(403).json({ message: "Access denied." });
+        
+        const lesson = course.lessons.id(req.params.lessonId);
+        if (!lesson) return res.status(404).json({ err: 'Lesson not found' });
+
+        lesson.title = req.body.title || lesson.title;
+        lesson.content = req.body.content || lesson.content;
+        
+        if (req.body.videoUrl !== undefined) {
+            lesson.videoUrl = req.body.videoUrl;
+        }
+        
+        if (req.file) {
+            lesson.pdfNotes = req.file.path || req.file.secure_url || req.file.url;
+        }
+
+        await course.save();
+        res.status(200).json({ message: "Lesson updated successfully", course });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+}
+
 const completeLesson = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
@@ -335,4 +361,4 @@ const getTrialLessons = async (req, res) => {
     }
 }
 
-module.exports = { create, show, enrollStudent, index, addLesson, completeLesson, addReview, updateCourse, toggleCourseVisibility, toggleCourseTrial, toggleLessonVisibility, toggleLessonTrial, deleteCourse, deleteLesson, unenrollStudent, getTrialLessons }
+module.exports = { create, show, enrollStudent, index, addLesson, updateLesson, completeLesson, addReview, updateCourse, toggleCourseVisibility, toggleCourseTrial, toggleLessonVisibility, toggleLessonTrial, deleteCourse, deleteLesson, unenrollStudent, getTrialLessons }
